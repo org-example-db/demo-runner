@@ -16,9 +16,26 @@ spec:
     spec:
       containers:
       - name: github-runner
-        image: gcr.io/devtestdb-287311/github-runner:v10
+        image: gcr.io/devtestdb-287311/github-runner:v10-gcloud
+        volumeMounts:
+        - name: gcp-sa-token
+          mountPath: "/home/runner/security" # This is gcloud SA
+          readOnly: true
         env:
         - name: ORGANIZATION
           value: org-example-db
-        - name: ACCESS_TOKEN # should be stored separately in a Kubernetes Secret
-          value: 219c5f178e7d070f557faf9586873721505b63e4
+        - name: ACCESS_TOKEN # stored separately in a Kubernetes Secret
+          valueFrom:
+            secretKeyRef:
+              name: github-token
+              key: access-token
+      volumes:
+      - name: gcp-sa-token
+        secret:
+          secretName: gcp-sa-token
+          items:
+          - key: token.json
+            path: token.json
+      - name: github-token
+        secret:
+          secretName: github-token
