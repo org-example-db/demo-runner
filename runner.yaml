@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: github-runner
-        image: gcr.io/devtestdb-287311/github-runner:v10
+        image: gcr.io/devtestdb-287311/github-runner:v10-docker
         env:
         - name: ORGANIZATION
           value: org-example-db
