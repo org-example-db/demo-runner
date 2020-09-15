@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: github-runner
-        image: gcr.io/devtestdb-287311/github-runner:v11-gcloud
+        image: gcr.io/dev1-designpat-playground-e09c/github-runner:4.0.0
         volumeMounts:
         - name: gcp-sa-token
           mountPath: "/home/runner/security" # This is gcloud SA
@@ -28,14 +28,14 @@ spec:
           valueFrom:
             secretKeyRef:
               name: github-token
-              key: access-token
+              key: github-token
       volumes:
       - name: gcp-sa-token
         secret:
           secretName: gcp-sa-token
           items:
-          - key: token.json
-            path: token.json
+          - key: key.json
+            path: key.json
       - name: github-token
         secret:
           secretName: github-token

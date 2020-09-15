@@ -40,4 +40,4 @@ RUN rm /home/runner/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
 USER dockeruser
 
 # set the entrypoint to the start.sh script
-ENTRYPOINT ["./start.sh"]
+ENTRYPOINT ["./start.sh"] 
