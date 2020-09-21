@@ -17,6 +17,9 @@ RUN cd /home && mkdir /helm && cd /helm \
     && rm helm-v3.0.2-linux-amd64.tar.gz \
     && rm -rf linux-amd64
 
+# add helm diff plugin
+helm plugin install https://github.com/databus23/helm-diff
+
 # cd into the user directory, download and unzip the github actions runner
 RUN cd /home && mkdir runner && cd runner \
     && curl -O -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz \
