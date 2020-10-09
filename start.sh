@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -eEo pipefail
 
-cd /home/runner
-
 function error {
     echo "Error; $1"
 }
@@ -70,13 +68,13 @@ echo "Getting temporary access token for registering"
 getRegistrationToken
 
 echo "Configuring GitHub Actions Runner and registering"
+cd /home/runner
 ./config.sh \
     --unattended \
     --url "${RUNNER_URL}" \
     --token "${TOKEN}" \
     --name "${RUNNER_NAME}" \
     --work ${RUNNER_WORK_DIRECTORY} \
-    --runnergroup ${GROUP} \
     $RUNNER_OPTIONS
 
 echo "Starting GitHub Actions Runner"
