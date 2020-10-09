@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: github-runner-2
-        image: gcr.io/dev1-designpat-playground-e09c/github-runner:1.4.4-addEnvVars
+        image: gcr.io/dev1-designpat-playground-e09c/github-runner:1.4.6-moveRunUp1Level
         volumeMounts:
         - name: gcp-sa-token
           mountPath: "/home/runner/security" # This is gcloud SA

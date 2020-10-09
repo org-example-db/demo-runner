@@ -37,7 +37,7 @@ RUN echo ${RUNNER_VERSION} \
     && rm -f actions-runner-linux-x64-${GH_RUNNER_VERSION}.tar.gz \
     && ./bin/installdependencies.sh 
 
-RUN cp home/runner/bin/runsvc.sh . && chmod +x ./runsvc.sh
+RUN cp home/runner/bin/runsvc.sh home/runner/runsvc.sh && chmod +x home/runner/runsvc.sh
 
 # install some additional dependencies
 RUN chown -R dockeruser /home/runner
