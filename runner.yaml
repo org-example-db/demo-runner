@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: github-runner-2
-        image: gcr.io/dev1-designpat-playground-e09c/github-runner:1.4.0-oldRunnerVersion
+        image: gcr.io/dev1-designpat-playground-e09c/github-runner:1.4.1-newStartScript
         volumeMounts:
         - name: gcp-sa-token
           mountPath: "/home/runner/security" # This is gcloud SA
@@ -24,11 +24,20 @@ spec:
         env:
         - name: RUNNER_REPOSITORY_URL
           value: https://github.com/OLB-PoC/designpat-environment
+        - name: RUNNER_NAME
+          value: Test-Prod-Runner
         - name: REPO
           value: designpat-environment
+        - name: ORGANIZATION
+          value: OLB-PoC
         - name: ENVIRONMENT
           value: prod
         - name: GITHUB_TOKEN # stored separately in a Kubernetes Secret
+          valueFrom:
+            secretKeyRef:
+              name: github-token
+              key: github-token
+        - name: ACCESS_TOKEN # stored separately in a Kubernetes Secret
           valueFrom:
             secretKeyRef:
               name: github-token
