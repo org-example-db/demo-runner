@@ -1,34 +1,34 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: github-runner
+  name: github-runner-2
   labels:
-    app: github-runner
+    app: github-runner-2
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: github-runner
+      app: github-runner-2
   template:
     metadata:
       labels:
-        app: github-runner
+        app: github-runner-2
     spec:
       containers:
-      - name: github-runner
-        image: gcr.io/dev1-designpat-playground-e09c/github-runner:1.3.4-helm-diff
+      - name: github-runner-2
+        image: gcr.io/dev1-designpat-playground-e09c/github-runner:1.4.0-oldRunnerVersion
         volumeMounts:
         - name: gcp-sa-token
           mountPath: "/home/runner/security" # This is gcloud SA
           readOnly: true
         env:
-        - name: ORGANIZATION
-          value: OLB-PoC
+        - name: RUNNER_REPOSITORY_URL
+          value: https://github.com/OLB-PoC/designpat-environment
         - name: REPO
-          value: designpat-cicd-pipeline
+          value: designpat-environment
         - name: ENVIRONMENT
           value: prod
-        - name: ACCESS_TOKEN # stored separately in a Kubernetes Secret
+        - name: GITHUB_TOKEN # stored separately in a Kubernetes Secret
           valueFrom:
             secretKeyRef:
               name: github-token

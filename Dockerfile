@@ -26,19 +26,22 @@ RUN apt-get install jo
 RUN echo ${RUNNER_VERSION} \
     && cd /home && mkdir runner && cd runner \
     && curl -O -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz \
-    && tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
+    && tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz \
+    && rm -f actions-runner-linux-x64-${GH_RUNNER_VERSION}.tar.gz \
+    && ./bin/installdependencies.sh 
+
+RUN cp home/runner/bin/runsvc.sh .
+
+RUN chmod +x ./runsvc.sh
 
 # install some additional dependencies
-RUN chown -R dockeruser /home/runner && /home/runner/bin/installdependencies.sh
+RUN chown -R dockeruser /home/runner
 
 # copy over the start.sh script
-COPY start.sh start.sh
+COPY start.sh .
 
 # make the script executable
-RUN chmod +x start.sh
-
-# remove installation files to make image smaller
-RUN rm /home/runner/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
+RUN chmod +x ./start.sh
 
 # since the config and run script for actions are not allowed to be run by root,
 # set the user to "dockeruser" so all subsequent commands are run as the docker user
@@ -46,6 +49,8 @@ USER dockeruser
 
 # add helm diff plugin, needs to be executed as dockeruser
 RUN helm plugin install https://github.com/databus23/helm-diff
+
+RUN ls -l .
 
 # set the entrypoint to the start.sh script
 ENTRYPOINT ["./start.sh"] 
