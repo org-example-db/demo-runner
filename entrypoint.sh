@@ -68,7 +68,7 @@ echo "Getting temporary access token for registering"
 getRegistrationToken
 
 echo "Configuring GitHub Actions Runner and registering"
-cd /home/runner
+cd /home/actions
 ./config.sh \
     --unattended \
     --url "${RUNNER_URL}" \
