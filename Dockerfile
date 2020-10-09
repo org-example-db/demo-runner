@@ -4,6 +4,13 @@ FROM google/cloud-sdk:310.0.0
 ARG RUNNER_VERSION="2.273.4"
 ARG HELM="3.3.3"
 
+ENV RUNNER_NAME=""
+ENV GITHUB_TOKEN=""
+ENV RUNNER_LABELS=""
+ENV RUNNER_WORK_DIRECTORY="_work"
+ENV RUNNER_ALLOW_RUNASROOT=false
+ENV AGENT_TOOLS_DIRECTORY=/opt/hostedtoolcache
+
 # update the base packages and add a non-sudo user
 #RUN apt-get update -y && apt-get upgrade -y && useradd -m dockeruser
 RUN useradd -m dockeruser
@@ -30,9 +37,7 @@ RUN echo ${RUNNER_VERSION} \
     && rm -f actions-runner-linux-x64-${GH_RUNNER_VERSION}.tar.gz \
     && ./bin/installdependencies.sh 
 
-RUN cp home/runner/bin/runsvc.sh .
-
-RUN chmod +x ./runsvc.sh
+RUN cp home/runner/bin/runsvc.sh . && chmod +x ./runsvc.sh
 
 # install some additional dependencies
 RUN chown -R dockeruser /home/runner
@@ -49,8 +54,6 @@ USER dockeruser
 
 # add helm diff plugin, needs to be executed as dockeruser
 RUN helm plugin install https://github.com/databus23/helm-diff
-
-RUN ls -l .
 
 # set the entrypoint to the start.sh script
 ENTRYPOINT ["./start.sh"] 
