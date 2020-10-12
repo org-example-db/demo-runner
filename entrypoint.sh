@@ -7,14 +7,14 @@ function error {
 
 function getRegistrationToken {
     if [[ -z GITHUB_TOKEN ]]; then
-        error "A GITHUB_TOKEN environment variable is required to register the actions runner with the repository or organization."
+        error "=== A GITHUB_TOKEN environment variable is required to register the actions runner with the repository or organization. ==="
         exit 1
     else
         # Get a short lived token to register the actions runner
-        echo "Getting registration token for runner..."
+        echo "=== Getting registration token for runner... ==="
 
         if [[ -z $SCOPE ]]; then
-            error "Was not able to identify SCOPE for the token"
+            error "=== Was not able to identify SCOPE for the token ==="
             exit 1
         fi
 
@@ -34,17 +34,19 @@ SCOPE=""
 TOKEN=""
 
 if [[ -z $RUNNER_NAME ]]; then
-    echo "Using hostname for Actions Runner Name."
+    echo "=== Using hostname for Actions Runner Name. ==="
     export RUNNER_NAME=${HOSTNAME}
 fi
 
 # We need to know what type of runner we are
 if [[ -z "${RUNNER_ENTERPRISE_URL}" && -z "${RUNNER_ORGANIZATION_URL}" && -z "${RUNNER_REPOSITORY_URL}" ]]; then
-    error "RUNNER_ENTERPRISE_URL, RUNNER_ORGANIZATION_URL or RUNNER_REPOSITORY_URL needs to be specified when registering an Actions runner"
+    error "=== RUNNER_ENTERPRISE_URL, RUNNER_ORGANIZATION_URL or RUNNER_REPOSITORY_URL needs to be specified when registering an Actions runner ==="
     exit 1
 fi
 
-# Use priority of enterprise -> organization -> repoistory if more than one specified
+echo "=== Using source code URL: " $RUNNER_REPOSITORY_URL " ==="
+
+# Use priority of enterprise -> organization -> repository if more than one specified
 if [[ -n ${RUNNER_ENTERPRISE_URL} ]]; then
     export RUNNER_URL=${RUNNER_ENTERPRISE_URL}
     SCOPE=enterprises
@@ -64,11 +66,11 @@ fi
 # The runner group that the self-hosted runner will be registered with
 GROUP=${RUNNER_GROUP:-"default"}
 
-echo "Getting temporary access token for registering"
+echo "=== Getting temporary access token for registering ==="
 getRegistrationToken
 
-echo "Configuring GitHub Actions Runner and registering"
-cd /home/actions
+echo "=== Configuring GitHub Actions Runner and registering ==="
+cd /home/runner
 ./config.sh \
     --unattended \
     --url "${RUNNER_URL}" \
@@ -77,8 +79,8 @@ cd /home/actions
     --work ${RUNNER_WORK_DIRECTORY} \
     $RUNNER_OPTIONS
 
-echo "Starting GitHub Actions Runner"
-env -i ./runsvc.sh
+echo "=== Starting GitHub Actions Runner ==="
+env -i HOME=$HOME ./runsvc.sh
 
 # Deregister
 echo Cleaning up runner registration...
