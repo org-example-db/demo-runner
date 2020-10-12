@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: github-runner-2
+  name: github-runner-GH
   labels:
-    app: github-runner-2
+    app: github-runner-GH
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: github-runner-2
+      app: github-runner-GH
   template:
     metadata:
       labels:
-        app: github-runner-2
+        app: github-runner-GH
     spec:
       containers:
-      - name: github-runner-2
-        image: gcr.io/dev1-designpat-playground-e09c/github-runner:1.4.6-moveRunUp1Level
+      - name: github-runner-GH
+        image: gcr.io/dev1-designpat-playground-e09c/github-runner:1.5.0-GH-team
         volumeMounts:
         - name: gcp-sa-token
           mountPath: "/home/runner/security" # This is gcloud SA
@@ -25,7 +25,7 @@ spec:
         - name: RUNNER_REPOSITORY_URL
           value: https://github.com/OLB-PoC/designpat-environment
         - name: RUNNER_NAME
-          value: Test-Prod-Runner
+          value: Test-Prod-Runner-GH
         - name: REPO
           value: designpat-environment
         - name: ORGANIZATION
