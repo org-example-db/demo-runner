@@ -4,9 +4,15 @@ FROM google/cloud-sdk:310.0.0
 ARG RUNNER_VERSION="2.273.4"
 ARG HELM="3.3.3"
 
-# update the base packages and add a non-sudo user
-#RUN apt-get update -y && apt-get upgrade -y && useradd -m dockeruser
-RUN useradd -m dockeruser
+ENV RUNNER_NAME=""
+ENV GITHUB_TOKEN=""
+ENV RUNNER_LABELS=""
+ENV RUNNER_WORK_DIRECTORY="_work"
+ENV RUNNER_ALLOW_RUNASROOT=false
+ENV AGENT_TOOLS_DIRECTORY=/opt/hostedtoolcache
+
+# Add a non-sudo user
+RUN useradd -m actions
 
 # add additional packages as necessary
 RUN apt-get install -y curl jq  wget
@@ -19,33 +25,32 @@ RUN cd /home && mkdir /helm && cd /helm \
     && rm helm-v${HELM}-linux-amd64.tar.gz \
     && rm -rf linux-amd64
 
-# jo JSON builder
-RUN apt-get install jo
-
-# cd into the user directory, download and unzip the github actions runner
+# add github runner
 RUN echo ${RUNNER_VERSION} \
     && cd /home && mkdir runner && cd runner \
     && curl -O -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz \
-    && tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
+    && tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz \
+    && rm -f actions-runner-linux-x64-${GH_RUNNER_VERSION}.tar.gz \
+    && ./bin/installdependencies.sh 
 
-# install some additional dependencies
-RUN chown -R dockeruser /home/runner && /home/runner/bin/installdependencies.sh
+# put runsvc on same directory level as dependencies it needs to run
+RUN cp home/runner/bin/runsvc.sh home/runner/runsvc.sh && chmod +x home/runner/runsvc.sh
 
-# copy over the start.sh script
-COPY start.sh start.sh
+# update permissions
+RUN chown -R actions /home/runner
+
+# copy over the entrypoint.sh script
+COPY entrypoint.sh .
 
 # make the script executable
-RUN chmod +x start.sh
-
-# remove installation files to make image smaller
-RUN rm /home/runner/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
+RUN chmod +x ./entrypoint.sh 
 
 # since the config and run script for actions are not allowed to be run by root,
-# set the user to "dockeruser" so all subsequent commands are run as the docker user
-USER dockeruser
+# set the user to "actions" so all subsequent commands are run as the "actions" user
+USER actions
 
-# add helm diff plugin, needs to be executed as dockeruser
+# add helm diff plugin, needs to be executed as user "actions"
 RUN helm plugin install https://github.com/databus23/helm-diff
 
-# set the entrypoint to the start.sh script
-ENTRYPOINT ["./start.sh"] 
+# set the entrypoint to the entrypoint.sh script
+ENTRYPOINT ["./entrypoint.sh"] 
